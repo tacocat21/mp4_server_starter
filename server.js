@@ -134,6 +134,10 @@ userRoute.post(function(req, res){
 //	res.json({message: "finished"});
 });
 
+userRoute.options(function(req, res){
+      res.writeHead(200);
+      res.end();
+});
 
 var userRouteId = router.route('/users/:userId');
 
@@ -262,7 +266,8 @@ taskRoute.post(function(req, res){
 });
 
 taskRoute.options(function(req, res){
-
+	res.writeHead(200);
+	res.end();
 });
 
 var taskRouteId = router.route('/tasks/:id');	
