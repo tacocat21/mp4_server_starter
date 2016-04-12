@@ -210,15 +210,6 @@ taskRoute.get(function(req, res){
 	if(request.count){
 		count = request.count;
 	}
-
-/*	Task.find({}, function(err, result){
-		if(err || !result || !result.length){
-			res.status(404).json({message: "No tasks in database", data: []});
-		}
-		else{
-			res.json({message: "OK", data: result});
-		}
-	});*/
 	if(count){
 	Task.find(query).select(select).sort(sort).skip(skip).limit(limit).count(function(err, result){
 		if(err){
