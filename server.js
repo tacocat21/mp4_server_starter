@@ -82,7 +82,7 @@ userRoute.get(function(req, res){
 			res.status(404).json({message: "No users in database", data: []});
 		}
 		else{
-			res.json({message: "OK", data: result});
+			res.status(201).json({message: "OK", data: result});
 		}
 	});
 	}
@@ -92,7 +92,7 @@ userRoute.get(function(req, res){
 			res.status(404).json({message: "No users in database", data: []});
 		}
 		else{
-			res.json({message: "OK", data: result});
+			res.status(201).json({message: "OK", data: result});
 		}
 	}).select(select).sort(sort).skip(skip).limit(limit);
 	}
@@ -291,8 +291,9 @@ taskRouteId.put(function(req, res){
 });
 
 taskRouteId.delete(function(req,res){
+	
 	Task.remove({_id: req.params.id}, function(err, result){
-		if(err||!result){
+		if(err||!result.data){
 			res.status(404).send({message: "User not found", data: []});
 		}
 		else{
