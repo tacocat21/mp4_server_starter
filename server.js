@@ -42,12 +42,6 @@ homeRoute.get(function(req, res) {
   res.json({ message: 'Hello World!' });
 });
 
-//Llama route
-var llamaRoute = router.route('/llamas');
-
-llamaRoute.get(function(req, res) {
-  res.json([{ "name": "alice", "height": 12 }, { "name": "jane", "height": 13 }]);
-});
 
 //Add more routes here
 var userRoute = router.route('/users');
@@ -84,7 +78,7 @@ userRoute.get(function(req, res){
 	}
 	if(count){
 	User.find(query).select(select).sort(sort).skip(skip).limit(limit).count(function(err, result){
-		if(err){
+		if(err||!result.length){
 			res.status(404).json({message: "No users in database", data: []});
 		}
 		else{
@@ -94,7 +88,7 @@ userRoute.get(function(req, res){
 	}
 	else{
 	User.find(query,function(err, result){
-		if(err || !result){
+		if(err || !result.length){
 			res.status(404).json({message: "No users in database", data: []});
 		}
 		else{
@@ -125,10 +119,10 @@ userRoute.post(function(req, res){
 
 	user.save(function(err){
 		if(err){
-			res.send(err);
+			res.status(500).json({message:"Unable to save user", data:[]});
 		}	
 		else{
-			res.json({message:"Created", data: user});	
+			res.status(200).json({message:"User created", data: user});	
 		}
 	});
 //	res.json({message: "finished"});
@@ -163,7 +157,7 @@ userRouteId.put(function(req, res){
 			//users.dateCreated = new Date();
 			users.save(function(err){
 				if(err)
-					res.status(500).send(err);
+					res.status(500).json({message:"Unable to save user", data:[]});
 				res.status(200).json({message: "OK", data: users});
 
 			});
@@ -176,7 +170,7 @@ userRouteId.delete(function(req, res){
 			res.status(404).send({message: "User not found", data: []});
 		}
 		else{
-			res.status(200).json({message: "OK", data: [] });
+			res.status(200).json({message: "User deleted", data: [] });
 		}
 	});
 });
@@ -216,7 +210,7 @@ taskRoute.get(function(req, res){
 			res.status(404).json({message: "No users in database", data: []});
 		}
 		else{
-			res.json({message: "OK", data: result});
+			res.status(200).json({message: "OK", data: result});
 		}
 	});
 	}
@@ -226,7 +220,7 @@ taskRoute.get(function(req, res){
 			res.status(404).json({message: "No users in database", data: []});
 		}
 		else{
-			res.json({message: "OK", data: result});
+			res.status(200).json({message: "OK", data: result});
 		}
 	}).select(select).sort(sort).skip(skip).limit(limit);
 
@@ -245,13 +239,13 @@ taskRoute.post(function(req, res){
 	task.assignedUserName = req.body.assignedUserName;
 	
 	
-	task.save(function(err){
+	task.save(function(err, result){
 		if(err){
-			res.status(500).send(err);
+			res.status(500).json({message: "Unable to save task", data:[]});
 
 		}	
 		else{
-			res.json({message:"Created", data: task});	
+			res.status(200).json({message:"OK",data:result})
 		}
 	});
 });
@@ -265,7 +259,7 @@ var taskRouteId = router.route('/tasks/:id');
 taskRouteId.get(function(req, res){
 	Task.findById(req.params.id, function(err, tasks){
 		if(err||!tasks){
-			res.status(404).send({message: "User not found", data: []});
+			res.status(404).send({message: "Task not found", data: []});
 		}
 		else{
 			res.status(200).json({message: "OK", data: tasks});
@@ -276,8 +270,8 @@ taskRouteId.get(function(req, res){
 taskRouteId.put(function(req, res){
 	Task.findById(req.params.id, function(err, task){
 		if(err||!task){
-			res.status(500).send(err);
-//			res.status(404).send({message: "User not found", data: []});
+//			res.status(500).send(err);
+			res.status(404).send({message: "Unable to save task", data: []});
 		}
 		else{
 			task.name= req.body.name;
@@ -288,7 +282,7 @@ taskRouteId.put(function(req, res){
 			task.assignedUserName = req.body.assignedUserName;
 			task.save(function(err){
 				if(err)
-					res.status(500).send(err);
+					res.status(500).json({message: "Unable to find task", data:[]});
 				res.status(200).json({message: "OK", data: task});
 			});
 
